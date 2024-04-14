@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { redirectToAuthCodeFlow } from "../handlers/loginHandler";
+import { redirectToAuthCodeFlow } from "../handlers/spotifyHandler";
 
 export default function Login() {
-  const clientId = process.env.CLIENT_ID!;
+  const clientId = import.meta.env.VITE_CLIENT_ID;
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
 

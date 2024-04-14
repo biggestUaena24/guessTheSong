@@ -1,13 +1,3 @@
-const clientId = process.env.CLIENT_ID!;
-const params = new URLSearchParams(window.location.search);
-const code = params.get("code");
-
-if (!code) {
-  redirectToAuthCodeFlow(clientId);
-} else {
-  console.log(fetchProfile(await getAccessToken(clientId, code)));
-}
-
 export async function redirectToAuthCodeFlow(clientId: string) {
   const verifier = generateCodeVerifier(128);
   const challenge = await generateCodeChallenge(verifier);
@@ -50,17 +40,23 @@ export async function getAccessToken(
   code: string
 ): Promise<string> {
   const verifier = localStorage.getItem("verifier");
+  const clientSecret = btoa(
+    import.meta.env.VITE_CLIENT_ID + ":" + import.meta.env.VITE_CLIENT_SECRET
+  );
 
   const params = new URLSearchParams();
   params.append("client_id", clientId);
   params.append("grant_type", "authorization_code");
   params.append("code", code);
-  params.append("redirect_uri", "http://localhost:5173/callback");
+  params.append("redirect_uri", "http://localhost:5173/");
   params.append("code_verifier", verifier!);
 
   const result = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: "Basic " + clientSecret,
+    },
     body: params,
   });
 
@@ -68,11 +64,28 @@ export async function getAccessToken(
   return access_token;
 }
 
-export async function fetchProfile(token: string): Promise<any> {
+export async function getUserId(token: string): Promise<any> {
   const result = await fetch("https://api.spotify.com/v1/me", {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
+
+  const { id } = await result.json();
+  localStorage.setItem("userId", id);
+  return id;
+}
+
+export async function getPlaylists(
+  token: string,
+  userId: string
+): Promise<any> {
+  const result = await fetch(
+    `https://api.spotify.com/v1/users/${userId}/playlists`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
 
   return await result.json();
 }
