@@ -1,29 +1,28 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   getAccessToken,
   getUserId,
   getPlaylists,
 } from "../handlers/spotifyHandler";
+import Playlist_Card from "../components/playlist-card";
 
 export default function Root() {
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
+  const [playlistItems, setPlaylistItems] = useState([]);
 
-  // Define fetchToken to also return the token
   async function fetchToken() {
     if (code) {
       const token = await getAccessToken(import.meta.env.VITE_CLIENT_ID, code);
-      console.log(token);
       localStorage.setItem("token", token);
-      return token; // Return the fetched token for subsequent use
+      return token;
     }
   }
 
   async function fetchAndSetUserId(token: string) {
     if (token && code) {
       const id = await getUserId(token);
-      console.log(id);
       localStorage.setItem("userId", id);
     }
   }
@@ -31,7 +30,7 @@ export default function Root() {
   async function fetchUserPlaylists(token: string, userId: string) {
     if (token && userId && code) {
       const playlists = await getPlaylists(token, userId);
-      console.log(playlists);
+      setPlaylistItems(playlists.items);
     }
   }
 
@@ -48,12 +47,18 @@ export default function Root() {
     }
 
     fetchAndSetup();
-  }, [code]); // Dependency array includes `code` to re-run only if `code` changes
+  }, [code]);
 
   return (
     <>
       <h1>This will be the first page that the user sees</h1>
-      {code ? null : <Link to="/login">Go to the Login page </Link>}
+      {code ? (
+        playlistItems.map(({ id, name }) => {
+          return <Playlist_Card name={name} />;
+        })
+      ) : (
+        <Link to="/login">Go to the Login page </Link>
+      )}
     </>
   );
 }
