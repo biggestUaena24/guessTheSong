@@ -89,3 +89,15 @@ export async function getPlaylists(
 
   return await result.json();
 }
+
+export async function getPlaylistTracks(
+  apiUrl: string,
+  token: string
+): Promise<any> {
+  const result = await fetch(apiUrl, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  return await result.json();
+}

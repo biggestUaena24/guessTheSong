@@ -53,8 +53,8 @@ export default function Root() {
     <>
       <h1>This will be the first page that the user sees</h1>
       {code ? (
-        playlistItems.map(({ id, name }) => {
-          return <Playlist_Card name={name} />;
+        playlistItems.map(({ id, name, tracks }) => {
+          return <Playlist_Card key={id} name={name} tracks={tracks["href"]} />;
         })
       ) : (
         <Link to="/login">Go to the Login page </Link>
