@@ -1,18 +1,7 @@
 import { useState, useEffect } from "react";
 
-const track: any = {
-  name: "",
-  album: {
-    images: [{ url: "" }],
-  },
-  artists: [{ name: "" }],
-};
-
-export default function WebPlayback(props: any) {
-  const [is_paused, setPaused] = useState(false);
-  const [is_active, setActive] = useState(false);
+export default function WebPlayback({ token }: { token: string }) {
   const [player, setPlayer] = useState(undefined);
-  const [userTrack, setUserTrack] = useState(track);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -21,11 +10,13 @@ export default function WebPlayback(props: any) {
 
     document.body.appendChild(script);
 
+    // @ts-ignore
     window.onSpotifyWebPlaybackSDKReady = () => {
+      // @ts-expect-error
       const player = new window.Spotify.Player({
         name: "Web Playback SDK",
         getOAuthToken: (cb: (arg0: any) => void) => {
-          cb(props.token);
+          cb(token);
         },
         volume: 0.5,
       });
@@ -42,19 +33,6 @@ export default function WebPlayback(props: any) {
           console.log("Device ID has gone offline", device_id);
         }
       );
-
-      player.addListener("player_state_changed", (state: any) => {
-        if (!state) {
-          return;
-        }
-
-        setUserTrack(state.track_window.current_track);
-        setPaused(state.paused);
-
-        player.getCurrentState().then((state: any) => {
-          !state ? setActive(false) : setActive(true);
-        });
-      });
 
       player.connect();
     };

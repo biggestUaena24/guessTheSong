@@ -1,20 +1,11 @@
-import { useEffect } from "react";
-import { redirectToAuthCodeFlow } from "../handlers/spotifyHandler";
-
 export default function Login() {
-  const clientId = import.meta.env.VITE_CLIENT_ID;
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
-
-  useEffect(() => {
-    if (!code) {
-      redirectToAuthCodeFlow(clientId);
-    }
-  });
-
   return (
-    <div>
-      <h1>This will be the login page</h1>
+    <div className="App">
+      <header className="App-header">
+        <a className="btn-spotify" href="http://localhost:1314/auth/login">
+          Login with Spotify
+        </a>
+      </header>
     </div>
   );
 }
