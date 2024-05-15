@@ -1,18 +1,13 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Login from "./login";
 import WebPlayback from "../components/webPlayback";
 
 export default function Root() {
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState<string>("");
 
   useEffect(() => {
-    async function getToken() {
-      const response = await fetch("http://localhost:1314/auth/token");
-      const json = await response.json();
-      setToken(json.access_token);
-    }
-
-    getToken();
+    const localToken = localStorage.getItem("token") || "";
+    setToken(localToken);
   }, []);
 
   return <>{token === "" ? <Login /> : <WebPlayback token={token} />}</>;
