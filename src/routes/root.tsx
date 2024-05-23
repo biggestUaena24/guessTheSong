@@ -8,7 +8,7 @@ export default function Root() {
   useEffect(() => {
     async function getToken() {
       try {
-        const response = await fetch("http://localhost:1314/auth/token", {
+        const response = await fetch("https://localhost:1314/auth/token", {
           credentials: "include",
         });
         const json = await response.json();
