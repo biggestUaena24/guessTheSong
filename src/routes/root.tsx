@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Login from "./login";
+import LoginPage from "../page/loginPage";
 import WebPlayback from "../components/webPlayback";
 
 export default function Root() {
@@ -14,6 +14,7 @@ export default function Root() {
         const json = await response.json();
         if (json.token) {
           setToken(json.token);
+          localStorage.setItem("spotifyToken", json.token);
         } else {
           console.log("No token found");
         }
@@ -25,5 +26,5 @@ export default function Root() {
     getToken();
   }, []);
 
-  return <>{token === "" ? <Login /> : <WebPlayback token={token} />}</>;
+  return <>{token === "" ? <LoginPage /> : <WebPlayback token={token} />}</>;
 }
