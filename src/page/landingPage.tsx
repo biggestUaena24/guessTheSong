@@ -15,7 +15,6 @@ export default function LandingPage() {
         );
         const json = await response.json();
         setPlaylists(json.playlists.items);
-        console.log(json.playlists.items);
       } catch (error) {
         console.log("Failed to fetch playlists");
       }
