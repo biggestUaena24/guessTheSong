@@ -1,12 +1,14 @@
+interface PlaylistCardProps {
+  name: string;
+  trackUrl: string;
+  totalTrack: number;
+}
+
 export default function PlaylistCard({
   name,
   trackUrl,
   totalTrack,
-}: {
-  name: string;
-  trackUrl: string;
-  totalTrack: number;
-}) {
+}: PlaylistCardProps) {
   function onClick(trackUrl: string, totalTrack: number) {
     try {
       fetch("https://localhost:1314/spotify/tracks", {

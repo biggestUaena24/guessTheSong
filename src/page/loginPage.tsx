@@ -8,7 +8,6 @@ export default function LoginPage() {
       </nav>
       <div>
         There should be some contents displayed here to show what this website
-        is used for
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ export default function Root() {
         const json = await response.json();
         if (json.token) {
           setIsToken(true);
+          localStorage.setItem("token", json.token);
         } else {
           console.log("No token found");
         }
