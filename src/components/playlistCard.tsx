@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 interface PlaylistCardProps {
   name: string;
   trackUrl: string;
@@ -9,6 +11,8 @@ export default function PlaylistCard({
   trackUrl,
   totalTrack,
 }: PlaylistCardProps) {
+  const navigate = useNavigate();
+
   function onClick(trackUrl: string, totalTrack: number) {
     try {
       fetch("https://localhost:1314/spotify/tracks", {
@@ -20,7 +24,15 @@ export default function PlaylistCard({
         },
       })
         .then((response) => response.json())
-        .then((json) => console.log(json))
+        .then((tracks) => {
+          if (tracks) {
+            console.log(tracks.tracks.items);
+            const trackItems = tracks.tracks.items;
+            navigate("/tracklist", { state: { trackItems } });
+          } else {
+            console.log("No tracks found");
+          }
+        })
         .catch((error) =>
           console.error("Failed to fetch playlist tracks", error)
         );
