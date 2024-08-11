@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 interface WebPlaybackProps {
   token: string;
-  trackUrl: string;
+  trackUrl: string[];
 }
 
 interface Track {
@@ -42,8 +42,8 @@ export default function WebPlayback({ token, trackUrl }: WebPlaybackProps) {
       setPlayer(player);
 
       player.addListener("ready", ({ device_id }: { device_id: string }) => {
-        console.log("Ready with Device ID", device_id);
         player.connect();
+        playTrack(trackUrl, device_id);
       });
 
       player.addListener("player_state_changed", (state: any) => {
@@ -73,7 +73,7 @@ export default function WebPlayback({ token, trackUrl }: WebPlaybackProps) {
 
   useEffect(() => {
     if (player && trackUrl) {
-      playTrack(trackUrl);
+      console.log("player is ready and trackUrl is set");
       setTimeout(() => {
         // @ts-ignore
         player.pause();
@@ -81,17 +81,21 @@ export default function WebPlayback({ token, trackUrl }: WebPlaybackProps) {
     }
   }, [trackUrl, player]);
 
-  const playTrack = (spotify_uri: string) => {
-    // @ts-ignore
-    const { device_id } = player._options;
-    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
+  const playTrack = (spotify_uri: string[], deviceId: string) => {
+    spotify_uri = cleanUris(spotify_uri);
+    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
       method: "PUT",
-      body: JSON.stringify({ uris: [spotify_uri] }),
+      body: JSON.stringify({ uris: spotify_uri }),
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     }).catch((err) => console.error("Error playing track:", err));
+  };
+
+  const cleanUris = (uris: string[]) => {
+    // only returns uris that are starting with "spotify:track:"
+    return uris.filter((uri) => uri.includes("spotify:track:"));
   };
 
   if (!is_active) {

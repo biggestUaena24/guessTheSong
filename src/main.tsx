@@ -1,7 +1,7 @@
 import * as ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Root from "./routes/root";
-import TrackList from "./routes/tracklist";
+import GamePage from "./routes/gamepage";
 
 const router = createBrowserRouter([
   {
@@ -9,8 +9,8 @@ const router = createBrowserRouter([
     element: <Root />,
   },
   {
-    path: "/tracklist",
-    element: <TrackList />,
+    path: "/gamepage",
+    element: <GamePage />,
   },
 ]);
 

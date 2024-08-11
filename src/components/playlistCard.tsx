@@ -28,7 +28,8 @@ export default function PlaylistCard({
           if (tracks) {
             console.log(tracks.tracks.items);
             const trackItems = tracks.tracks.items;
-            navigate("/tracklist", { state: { trackItems } });
+            // Needs a new route for user to play the game and also interact with web playback sdk there
+            navigate("/gamepage", { state: { trackItems } });
           } else {
             console.log("No tracks found");
           }
