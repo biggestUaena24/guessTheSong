@@ -13,16 +13,18 @@ function GamePage() {
   const location = useLocation();
   const { trackItems } = location.state;
   trackItems.sort(() => Math.random() - 0.5);
-  const trackUris = trackItems.map((track: any) => track.track.uri);
+  let trackUris = trackItems.map((track: any) => track.track.uri);
+  trackUris = trackUris.filter((uri: string) => uri.includes("spotify:track:"));
   const token = localStorage.getItem("token");
 
-  const [player, setPlayer] = useState(undefined);
+  const [player, setPlayer] = useState<any>(undefined);
   const [is_active, setActive] = useState(false);
   const [current_track, setTrack] = useState<Track>({
     name: "",
     album: { images: [{ url: "" }] },
     artists: [{ name: "" }],
   });
+  const [playerReady, setPlayerReady] = useState(false);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -46,7 +48,8 @@ function GamePage() {
       player.addListener("ready", ({ device_id }: { device_id: string }) => {
         player.connect();
         playTrack(trackUris, device_id);
-        player.resume();
+        player.pause();
+        setPlayerReady(true);
       });
 
       player.addListener("player_state_changed", (state: any) => {
@@ -75,7 +78,6 @@ function GamePage() {
   }, [token]);
 
   const playTrack = (spotify_uri: string[], deviceId: string) => {
-    spotify_uri = cleanUris(spotify_uri);
     fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
       method: "PUT",
       body: JSON.stringify({ uris: spotify_uri }),
@@ -86,17 +88,21 @@ function GamePage() {
     }).catch((err) => console.error("Error playing track:", err));
   };
 
-  const cleanUris = (uris: string[]) => {
-    return uris.filter((uri) => uri.includes("spotify:track:"));
-  };
+  // Logic to play the track for 3 seconds and then pause it
+  useEffect(() => {
+    if (playerReady && player) {
+      player.resume();
+      setTimeout(() => {
+        player.pause();
+      }, 3000);
+    }
+  }, [playerReady, player]);
 
   if (!is_active) {
     return (
       <div className="container">
         <div className="main-wrapper">
-          <b>
-            Instance not active. Transfer your playback using your Spotify app
-          </b>
+          <b>loading song...</b>
         </div>
       </div>
     );
