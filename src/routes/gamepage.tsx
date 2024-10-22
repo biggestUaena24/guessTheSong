@@ -14,7 +14,6 @@ function GamePage() {
   const { trackItems } = location.state;
   trackItems.sort(() => Math.random() - 0.5);
   let trackUris = trackItems.map((track: any) => track.track.uri);
-  trackUris = trackUris.filter((uri: string) => uri.includes("spotify:track:"));
   const token = localStorage.getItem("token");
 
   const [player, setPlayer] = useState<any>(undefined);
