@@ -43,6 +43,7 @@ function WebPlayback() {
       player.addListener("ready", ({ device_id }: { device_id: string }) => {
         console.log("Ready with Device ID", device_id);
         transferPlayback(device_id);
+        playTrack();
       });
 
       player.addListener("player_state_changed", (state: any) => {
@@ -53,32 +54,7 @@ function WebPlayback() {
         setActive(true);
       });
 
-      player.addListener(
-        "authentication_error",
-        ({ message }: { message: string }) => {
-          console.error("Authentication Error:", message);
-          setActive(false);
-        }
-      );
-
-      player.addListener(
-        "account_error",
-        ({ message }: { message: string }) => {
-          console.error("Account Error:", message);
-          setActive(false);
-        }
-      );
-
-      player.addListener(
-        "playback_error",
-        ({ message }: { message: string }) => {
-          console.error("Playback Error:", message);
-        }
-      );
-
       player.connect();
-
-      // Store player in ref
       playerRef.current = player;
     };
 
@@ -103,6 +79,22 @@ function WebPlayback() {
         Authorization: `Bearer ${token}`,
       },
     }).catch((err) => console.error("Transfer error:", err));
+  };
+
+  const playTrack = () => {
+    playerRef.current?.resume();
+    setTimeout(() => {
+      playerRef.current?.pause();
+    }, 3000);
+  };
+
+  const playNextTrack = () => {
+    playerRef.current?.pause();
+    playerRef.current?.nextTrack();
+    playerRef.current?.resume();
+    setTimeout(() => {
+      playerRef.current?.pause();
+    }, 3000);
   };
 
   if (!is_active) {
@@ -149,10 +141,7 @@ function WebPlayback() {
                 {is_paused ? "PLAY" : "PAUSE"}
               </button>
 
-              <button
-                className="btn-spotify"
-                onClick={() => playerRef.current?.nextTrack()}
-              >
+              <button className="btn-spotify" onClick={() => playNextTrack()}>
                 &gt;&gt;
               </button>
             </div>
