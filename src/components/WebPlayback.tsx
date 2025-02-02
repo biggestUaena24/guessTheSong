@@ -10,6 +10,7 @@ const track = {
 
 function WebPlayback() {
   const token = localStorage.getItem("token");
+  let trackUris = [];
   const [is_paused, setPaused] = useState(false);
   const [is_active, setActive] = useState(false);
   const [current_track, setTrack] = useState(track);
@@ -96,6 +97,24 @@ function WebPlayback() {
       playerRef.current?.pause();
     }, 3000);
   };
+
+  useEffect(() => {
+    async function getSavedLists() {
+      const response = await fetch(
+        "https://localhost:1314/spotify/saved_tracks",
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+      const json = await response.json();
+      trackUris = json.filter((uri: string) => uri.includes("spotify:track:"));
+    }
+
+    if (is_active) {
+      getSavedLists();
+    }
+  }, [is_active]);
 
   if (!is_active) {
     return (
