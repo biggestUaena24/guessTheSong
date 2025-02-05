@@ -15,6 +15,7 @@ function WebPlayback() {
   const [deviceId, setDeviceId] = useState("");
   const [trackUris, setTrackUris] = useState<string[]>([]);
   const [answerValue, setAnswerValue] = useState("");
+  const [score, setScore] = useState(0);
   const playerRef = useRef<any>(null);
   const trackUrisRef = useRef<string[]>([]);
 
@@ -136,11 +137,17 @@ function WebPlayback() {
     playerRef.current?.pause();
     if (answerValue.toLowerCase() === current_track.name.toLowerCase()) {
       console.log("Correct answer!");
+      setScore(score + 1);
     } else {
       console.log("Wrong answer. Correct song:", current_track.name);
     }
     playerRef.current?.nextTrack();
     setAnswerValue("");
+  };
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    checkAnswer();
   };
 
   if (!is_active || trackUris.length == 0) {
@@ -156,12 +163,14 @@ function WebPlayback() {
   return (
     <div className="container">
       <div className="main-wrapper">
+        <p>score</p>
+        <p>{score}</p>
         <img
           src={current_track.album.images[0].url}
           className="now-playing__cover"
           alt="Track cover"
         />
-        <div className="now-playing__side">
+        <form onSubmit={handleSubmit}>
           <input
             type="text"
             value={answerValue}
@@ -169,8 +178,8 @@ function WebPlayback() {
             placeholder="Guess the song"
             id="answerValue"
           />
-          <button onClick={checkAnswer}>Submit Answer</button>
-        </div>
+          <button type="submit">Submit Answer</button>
+        </form>
       </div>
     </div>
   );
