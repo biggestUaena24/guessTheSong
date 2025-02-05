@@ -24,7 +24,7 @@ function GamePage() {
     album: { images: [{ url: "" }] },
     artists: [{ name: "" }],
   });
-  const [playerReady, setPlayerReady] = useState(false);
+  const [answerValue, setAnswerValue] = useState("");
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -47,9 +47,10 @@ function GamePage() {
 
       player.addListener("ready", ({ device_id }: { device_id: string }) => {
         player.connect();
-        playTrack(trackUris, device_id);
-        player.pause();
-        setPlayerReady(true);
+        playInitialTrack(trackUris, device_id);
+        setTimeout(() => {
+          player.pause();
+        }, 3000);
       });
 
       player.addListener("player_state_changed", (state: any) => {
@@ -63,7 +64,9 @@ function GamePage() {
             (artist: { name: string }) => ({ name: artist.name })
           ),
         });
-        setActive(state !== null);
+        player.getCurrentState().then((state: any) => {
+          !state ? setActive(false) : setActive(true);
+        });
       });
 
       player.connect();
@@ -77,8 +80,8 @@ function GamePage() {
     };
   }, [token]);
 
-  const playTrack = (spotify_uri: string[], deviceId: string) => {
-    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
+  const playInitialTrack = (spotify_uri: string[], device_id: string) => {
+    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
       method: "PUT",
       body: JSON.stringify({ uris: spotify_uri }),
       headers: {
@@ -88,15 +91,16 @@ function GamePage() {
     }).catch((err) => console.error("Error playing track:", err));
   };
 
-  // Logic to play the track for 3 seconds and then pause it
-  useEffect(() => {
-    if (playerReady && player) {
-      player.resume();
-      setTimeout(() => {
-        player.pause();
-      }, 3000);
+  const checkAnswer = () => {
+    if (answerValue.toLowerCase() == current_track.name.toLowerCase()) {
+      console.log("You got the correct answer");
+    } else {
+      console.log("This is a wrong answer", current_track.name);
     }
-  }, [playerReady, player]);
+    player.nextTrack();
+    player.togglePlay();
+    console.log(player.getCurrentState());
+  };
 
   if (!is_active) {
     return (
@@ -113,14 +117,18 @@ function GamePage() {
           <img
             src={current_track.album.images[0].url}
             className="now-playing__cover"
-            alt={current_track.name}
           />
 
           <div className="now-playing__side">
-            <div className="now-playing__name">{current_track.name}</div>
-            <div className="now-playing__artist">
-              {current_track.artists[0].name}
-            </div>
+            <input
+              type="text"
+              id="fname"
+              name="fname"
+              onChange={(e) => {
+                setAnswerValue(e.target.value);
+              }}
+            />{" "}
+            <button onClick={checkAnswer}>Press to submit answer</button>
           </div>
         </div>
       </div>
