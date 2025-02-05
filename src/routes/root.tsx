@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import LoginPage from "../page/loginPage";
-// import LandingPage from "../page/landingPage";
-import WebPlayback from "../components/WebPlayback";
+import GamePage from "./gamepage";
 
 export default function Root() {
   const [isToken, setIsToken] = useState(false);
@@ -26,5 +25,5 @@ export default function Root() {
     getToken();
   }, []);
 
-  return <>{!isToken ? <LoginPage /> : <WebPlayback />}</>;
+  return <>{!isToken ? <LoginPage /> : <GamePage />}</>;
 }

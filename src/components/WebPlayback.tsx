@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 
 const track = {
   name: "",
@@ -10,6 +11,8 @@ const track = {
 
 function WebPlayback() {
   const token = localStorage.getItem("token");
+  const location = useLocation();
+  const { number_of_tracks } = location.state || { number_of_tracks: 0 };
   const [is_active, setActive] = useState(false);
   const [current_track, setTrack] = useState(track);
   const [deviceId, setDeviceId] = useState("");
@@ -95,6 +98,7 @@ function WebPlayback() {
 
   useEffect(() => {
     if (deviceId && trackUris.length > 0) {
+      console.log(number_of_tracks);
       playInitialTrack(trackUris, deviceId);
     }
   }, [deviceId, trackUris]);
@@ -125,7 +129,9 @@ function WebPlayback() {
   const playInitialTrack = (spotify_uri: string[], device_id: string) => {
     fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
       method: "PUT",
-      body: JSON.stringify({ uris: spotify_uri.slice(0, 500) }),
+      body: JSON.stringify({
+        uris: spotify_uri.slice(0, number_of_tracks),
+      }),
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,

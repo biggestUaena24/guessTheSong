@@ -1,7 +1,7 @@
 import * as ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Root from "./routes/root";
-import GamePage from "./routes/gamepage";
+import WebPlayback from "./components/WebPlayback";
 
 const router = createBrowserRouter([
   {
@@ -9,8 +9,8 @@ const router = createBrowserRouter([
     element: <Root />,
   },
   {
-    path: "/gamepage",
-    element: <GamePage />,
+    path: "/gaming",
+    element: <WebPlayback />,
   },
 ]);
 
