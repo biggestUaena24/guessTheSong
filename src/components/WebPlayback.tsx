@@ -176,7 +176,7 @@ function WebPlayback() {
           className="now-playing__cover"
           alt="Track cover"
         />
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} autoComplete="off">
           <input
             type="text"
             value={answerValue}

@@ -4,6 +4,7 @@ import GamePage from "./gamepage";
 
 export default function Root() {
   const [isToken, setIsToken] = useState(false);
+
   useEffect(() => {
     async function getToken() {
       try {
@@ -23,6 +24,27 @@ export default function Root() {
     }
 
     getToken();
+
+    const intervalId = setInterval(async () => {
+      try {
+        const refreshResponse = await fetch(
+          "https://localhost:1314/auth/refresh_token",
+          {
+            credentials: "include",
+          }
+        );
+        const refreshJson = await refreshResponse.json();
+        if (refreshJson.token) {
+          localStorage.setItem("token", refreshJson.token);
+        } else {
+          console.log("Failed to refresh token");
+        }
+      } catch (error) {
+        console.error("Failed to refresh token", error);
+      }
+    }, 60 * 60 * 1000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   return <>{!isToken ? <LoginPage /> : <GamePage />}</>;
