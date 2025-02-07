@@ -19,6 +19,7 @@ function WebPlayback() {
   const [trackUris, setTrackUris] = useState<string[]>([]);
   const [answerValue, setAnswerValue] = useState("");
   const [score, setScore] = useState(0);
+  const [isLoading, setIsLoading] = useState(true); // New state for loading
   const playerRef = useRef<any>(null);
   const trackUrisRef = useRef<string[]>([]);
 
@@ -147,6 +148,7 @@ function WebPlayback() {
     } else {
       console.log("Wrong answer. Correct song:", current_track.name);
     }
+    setIsLoading(false);
     playerRef.current?.nextTrack();
     setAnswerValue("");
   };
@@ -173,7 +175,7 @@ function WebPlayback() {
         <p>{score}</p>
         <img
           src={current_track.album.images[0].url}
-          className="now-playing__cover"
+          className={`rounded-lg ${isLoading ? "blur-sm" : ""}`}
           alt="Track cover"
         />
         <form onSubmit={handleSubmit} autoComplete="off">
