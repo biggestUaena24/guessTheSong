@@ -19,7 +19,7 @@ function WebPlayback() {
   const [trackUris, setTrackUris] = useState<string[]>([]);
   const [answerValue, setAnswerValue] = useState("");
   const [score, setScore] = useState(0);
-  const [isLoading, setIsLoading] = useState(true); // New state for loading
+  const [isRevealingAnswer, setIsRevealingAnswer] = useState(false);
   const playerRef = useRef<any>(null);
   const trackUrisRef = useRef<string[]>([]);
 
@@ -142,15 +142,21 @@ function WebPlayback() {
 
   const checkAnswer = () => {
     playerRef.current?.pause();
+    setIsRevealingAnswer(true);
+
     if (answerValue.toLowerCase() === current_track.name.toLowerCase()) {
       console.log("Correct answer!");
       setScore(score + 1);
     } else {
       console.log("Wrong answer. Correct song:", current_track.name);
     }
-    setIsLoading(false);
-    playerRef.current?.nextTrack();
-    setAnswerValue("");
+    playerRef.current?.resume();
+    setTimeout(() => {
+      playerRef.current?.pause();
+      setIsRevealingAnswer(false);
+      playerRef.current?.nextTrack();
+      setAnswerValue("");
+    }, 5000);
   };
 
   const handleSubmit = (e: any) => {
@@ -175,19 +181,27 @@ function WebPlayback() {
         <p>{score}</p>
         <img
           src={current_track.album.images[0].url}
-          className={`rounded-lg ${isLoading ? "blur-sm" : ""}`}
+          className={`rounded-lg ${!isRevealingAnswer ? "blur-sm" : ""}`}
           alt="Track cover"
         />
-        <form onSubmit={handleSubmit} autoComplete="off">
-          <input
-            type="text"
-            value={answerValue}
-            onChange={(e) => setAnswerValue(e.target.value)}
-            placeholder="Guess the song"
-            id="answerValue"
-          />
-          <button type="submit">Submit Answer</button>
-        </form>
+        {isRevealingAnswer && (
+          <div>
+            <p>{current_track.name}</p>
+            <p>{current_track.artists[0].name}</p>
+          </div>
+        )}
+        {!isRevealingAnswer && (
+          <form onSubmit={handleSubmit} autoComplete="off">
+            <input
+              type="text"
+              value={answerValue}
+              onChange={(e) => setAnswerValue(e.target.value)}
+              placeholder="Guess the song"
+              id="answerValue"
+            />
+            <button type="submit">Submit Answer</button>
+          </form>
+        )}
       </div>
     </div>
   );
