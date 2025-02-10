@@ -12,6 +12,7 @@ const track = {
 function WebPlayback() {
   const token = localStorage.getItem("token");
   const location = useLocation();
+  const regex = /\[.*?\]|\(.*?\)/g;
   const { number_of_tracks } = location.state || { number_of_tracks: 0 };
   const [is_active, setActive] = useState(false);
   const [current_track, setTrack] = useState(track);
@@ -143,8 +144,9 @@ function WebPlayback() {
   const checkAnswer = () => {
     playerRef.current?.pause();
     setIsRevealingAnswer(true);
+    const answer = current_track.name.replace(regex, "").trim();
 
-    if (answerValue.toLowerCase() === current_track.name.toLowerCase()) {
+    if (answerValue.toLowerCase() === answer.toLowerCase()) {
       console.log("Correct answer!");
       setScore(score + 1);
     } else {
@@ -186,7 +188,7 @@ function WebPlayback() {
         />
         {isRevealingAnswer && (
           <div>
-            <p>{current_track.name}</p>
+            <p>{current_track.name.replace(regex, "").trim()}</p>
             <p>{current_track.artists[0].name}</p>
           </div>
         )}
