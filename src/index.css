@@ -1,1 +1,7 @@
 @import "tailwindcss";
+
+@theme {
+  --color-black-background: #13242a;
+  --color-contrast-green: #26c485;
+  --color-contrast-green-focus: #1d9a68;
+}
