@@ -23,6 +23,7 @@ function WebPlayback() {
   const [isRevealingAnswer, setIsRevealingAnswer] = useState(false);
   const playerRef = useRef<any>(null);
   const trackUrisRef = useRef<string[]>([]);
+  const imageRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -166,6 +167,28 @@ function WebPlayback() {
     checkAnswer();
   };
 
+  useEffect(() => {
+    if (!isRevealingAnswer && imageRef.current) {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const img = imageRef.current;
+
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        const size = 10; // Mosaic block size
+        for (let x = 0; x < img.width; x += size) {
+          for (let y = 0; y < img.height; y += size) {
+            ctx?.drawImage(img, x, y, size, size, x, y, size, size);
+          }
+        }
+
+        img.src = canvas.toDataURL();
+      };
+    }
+  }, [isRevealingAnswer]);
+
   if (!is_active || trackUris.length == 0) {
     return (
       <div className="container">
@@ -177,31 +200,53 @@ function WebPlayback() {
   }
 
   return (
-    <div className="container">
-      <div className="main-wrapper">
-        <p>score</p>
-        <p>{score}</p>
+    <div className="flex flex-col h-screen p-4">
+      <div className="absolute top-0 left-0 p-4">
+        <p className="text-lg font-bold">Score: {score}</p>
+      </div>
+
+      <div className="flex flex-col items-center justify-center flex-grow">
         <img
+          ref={imageRef}
           src={current_track.album.images[0].url}
-          className={`rounded-lg ${!isRevealingAnswer ? "blur-sm" : ""}`}
+          className={`rounded-full w-96 h-96 ${
+            !isRevealingAnswer ? "mosaic" : ""
+          }`}
           alt="Track cover"
+          style={{
+            animation: isRevealingAnswer ? "none" : "spin 10s linear infinite",
+          }}
         />
+
         {isRevealingAnswer && (
-          <div>
-            <p>{current_track.name.replace(regex, "").trim()}</p>
-            <p>{current_track.artists[0].name}</p>
+          <div className="mt-4 text-center">
+            <p className="text-xl font-semibold">
+              {current_track.name.replace(regex, "").trim()}
+            </p>
+            <p className="text-lg text-gray-600">
+              {current_track.artists[0].name}
+            </p>
           </div>
         )}
+
         {!isRevealingAnswer && (
-          <form onSubmit={handleSubmit} autoComplete="off">
-            <input
-              type="text"
-              value={answerValue}
-              onChange={(e) => setAnswerValue(e.target.value)}
-              placeholder="Guess the song"
-              id="answerValue"
-            />
-            <button type="submit">Submit Answer</button>
+          <form onSubmit={handleSubmit} autoComplete="off" className="mt-6">
+            <div className="flex flex-col space-y-4">
+              <input
+                type="text"
+                value={answerValue}
+                onChange={(e) => setAnswerValue(e.target.value)}
+                placeholder="Guess the song"
+                id="answerValue"
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                type="submit"
+                className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                Submit Answer
+              </button>
+            </div>
           </form>
         )}
       </div>

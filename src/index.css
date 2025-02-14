@@ -5,3 +5,22 @@
   --color-contrast-green: #26c485;
   --color-contrast-green-focus: #1d9a68;
 }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rounded-full {
+  border-radius: 50%;
+}
+
+.mosaic {
+  filter: blur(5px); /* Fallback blur */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10" fill="black"/></svg>');
+  background-size: 10px 10px;
+}
