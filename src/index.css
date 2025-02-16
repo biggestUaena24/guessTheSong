@@ -20,7 +20,7 @@
 }
 
 .mosaic {
-  filter: blur(5px); /* Fallback blur */
+  filter: blur(5px);
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10" fill="black"/></svg>');
   background-size: 10px 10px;
 }
