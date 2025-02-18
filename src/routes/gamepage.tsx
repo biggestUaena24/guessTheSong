@@ -14,14 +14,15 @@ function GamePage() {
         randomly?
       </h1>
       <div className="flex items-center justify-items-stretch rounded-2xl">
-        <button
-          className="text-white bg-contrast-green hover:bg-contrast-green-focus focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-2xl text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-          onClick={() => handleClick(20)}
-        >
+        <button onClick={() => handleClick(20)} className="spotify-btn">
           20
         </button>
-        <button onClick={() => handleClick(30)}>30</button>
-        <button onClick={() => handleClick(50)}>50</button>
+        <button onClick={() => handleClick(30)} className="spotify-btn">
+          30
+        </button>
+        <button onClick={() => handleClick(50)} className="spotify-btn">
+          50
+        </button>
       </div>
     </div>
   );
