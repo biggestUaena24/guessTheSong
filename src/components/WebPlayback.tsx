@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
+import LoadingPlayer from "./LoadingPlayer";
 
 const track = {
   name: "",
@@ -190,13 +191,7 @@ function WebPlayback() {
   }, [isRevealingAnswer]);
 
   if (!is_active || trackUris.length == 0) {
-    return (
-      <div className="container">
-        <div className="main-wrapper">
-          <b>Initializing player and loading tracks...</b>
-        </div>
-      </div>
-    );
+    return <LoadingPlayer></LoadingPlayer>;
   }
 
   return (
